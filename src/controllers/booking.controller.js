@@ -1,7 +1,7 @@
-const Booking = require('./models/booking.model');
-const Flight = require('./models/flight.model');
-const ApiError = require('./utils/ApiError');
-const asyncHandler = require('./utils/asyncHandler');
+const Booking = require('../models/booking.model');
+const Flight = require('../models/flight.model');
+const ApiError = require('../utils/ApiError');
+const asyncHandler = require('../utils/asyncHandler');
 
 const mapBookingResponse = (booking) =>
   booking.populate([

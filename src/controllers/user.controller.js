@@ -1,8 +1,8 @@
 const User = require('../models/user.model');
 const Booking = require('../models/booking.model');
-const ApiError = require('../../utils/ApiError');
-const asyncHandler = require('../../utils/asyncHandler');
-const generateToken = require('../../utils/generateToken');
+const ApiError = require('../utils/ApiError');
+const asyncHandler = require('../utils/asyncHandler');
+const generateToken = require('../utils/generateToken');
 
 const sanitizeUser = (user) => {
   const { password, __v, ...safeUser } = user.toObject();
