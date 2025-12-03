@@ -6,12 +6,18 @@ const generateToken = require('../utils/generateToken');
 const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
+  // Validate input
+  if (!email || !password) {
+    return next(new ApiError(400, 'Email and password are required'));
+  }
+
   const user = await User.findOne({ email });
 
   if (!user) {
     return next(new ApiError(401, 'Invalid email or password'));
   }
 
+  // Compare password
   const isMatch = await user.comparePassword(password);
 
   if (!isMatch) {

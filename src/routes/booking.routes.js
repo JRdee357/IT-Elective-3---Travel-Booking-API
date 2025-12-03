@@ -19,6 +19,36 @@ const router = express.Router();
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - flightId
+ *               - passengers
+ *             properties:
+ *               flightId:
+ *                 type: string
+ *                 description: MongoDB ID of the flight
+ *               passengers:
+ *                 type: integer
+ *                 description: Number of passengers
+ *               payment:
+ *                 type: object
+ *                 properties:
+ *                   method:
+ *                     type: string
+ *                   amount:
+ *                     type: number
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ *       400:
+ *         description: Invalid booking data or not enough seats
+ *       401:
+ *         description: Unauthorized
  */
 router.post(
   '/',
@@ -41,6 +71,13 @@ router.post(
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: bookingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ID of the booking
  */
 router.get(
   '/:bookingId',
@@ -57,6 +94,24 @@ router.get(
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: bookingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ID of the booking
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               passengers:
+ *                 type: integer
+ *               payment:
+ *                 type: object
  */
 router.put(
   '/:bookingId',
@@ -67,15 +122,29 @@ router.put(
 
 /**
  * @swagger
- * /api/v1/bookings/{bookingId}:
+ * /api/v1/bookings/{bookingId}/cancel:
  *   delete:
  *     summary: Cancel a booking
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: bookingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ID of the booking
+ *     responses:
+ *       200:
+ *         description: Booking canceled successfully
+ *       403:
+ *         description: Forbidden - not your booking
+ *       404:
+ *         description: Booking not found
  */
 router.delete(
-  '/:bookingId',
+  '/:bookingId/cancel',
   [authenticate, param('bookingId').isMongoId()],
   validateRequest,
   cancelBooking

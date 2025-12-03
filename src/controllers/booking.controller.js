@@ -47,12 +47,12 @@ const createBooking = asyncHandler(async (req, res, next) => {
   flight.seatsAvailable -= passengers;
   await flight.save();
 
-  await mapBookingResponse(booking);
+  const populatedBooking = await mapBookingResponse(booking);
 
   return res.status(201).json({
     success: true,
     message: 'Booking confirmed',
-    data: booking,
+    data: populatedBooking,
   });
 });
 
@@ -66,14 +66,14 @@ const getBookingById = asyncHandler(async (req, res, next) => {
   }
 
   if (req.user.role !== 'admin' && booking.user.toString() !== req.user._id.toString()) {
-    return next(new ApiError(403, 'You cannot view another user’s booking'));
+    return next(new ApiError(403, 'You cannot view another user\'s booking'));
   }
 
-  await mapBookingResponse(booking);
+  const populatedBooking = await mapBookingResponse(booking);
 
   return res.json({
     success: true,
-    data: booking,
+    data: populatedBooking,
   });
 });
 
@@ -116,12 +116,12 @@ const updateBooking = asyncHandler(async (req, res, next) => {
   }
 
   await booking.save();
-  await mapBookingResponse(booking);
+  const populatedBooking = await mapBookingResponse(booking);
 
   return res.json({
     success: true,
     message: 'Booking updated',
-    data: booking,
+    data: populatedBooking,
   });
 });
 
