@@ -14,11 +14,22 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// Swagger UI loads its own JS/CSS assets; relax helmet for those resources
+// Swagger UI needs relaxed CSP to load its assets (inline init + CDN scripts/styles)
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
     crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "script-src": ["'self'", "'unsafe-inline'", "https://unpkg.com"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://unpkg.com"],
+        "connect-src": ["'self'", "https://unpkg.com"],
+        "img-src": ["'self'", "data:", "https://unpkg.com"],
+        "font-src": ["'self'", "https://unpkg.com"],
+      },
+    },
   })
 );
 app.use(cors());
