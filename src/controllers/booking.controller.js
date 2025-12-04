@@ -171,6 +171,15 @@ const updateBooking = asyncHandler(async (req, res, next) => {
       );
     }
 
+    if (amount !== undefined && amount > expectedAmount) {
+      return next(
+        new ApiError(
+          400,
+          `Payment amount must not exceed flight price * passengers: ${booking.flight.price} * ${booking.passengers} = ${expectedAmount}. Got: ${amount}`
+        )
+      );
+    }
+
     booking.payment = { ...booking.payment, ...paymentRest };
 
     if (amount !== undefined) {

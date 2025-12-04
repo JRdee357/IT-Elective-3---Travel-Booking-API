@@ -156,7 +156,10 @@ router.put(
     authenticate,
     param('userId').isMongoId(),
     body('email').optional().isEmail(),
-    body('password').optional().isLength({ min: 8 }),
+    body('password')
+      .optional()
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters'),
     body('firstName').optional().isString(),
     body('lastName').optional().isString(),
     body('phone')
