@@ -14,7 +14,13 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-app.use(helmet());
+// Swagger UI loads its own JS/CSS assets; relax helmet for those resources
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
