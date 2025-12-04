@@ -48,8 +48,41 @@ app.use('/api/v1/auth', authRoutes);
 
 // Expose raw OpenAPI spec for debugging (helps verify Swagger loads correctly)
 app.get('/api-docs.json', (req, res) => res.json(swaggerSpec));
-// Serve Swagger UI with bundled assets from swagger-ui-express
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+
+// Serve Swagger UI using CDN assets to avoid local asset path issues on serverless hosting
+app.get('/api-docs', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+      window.onload = () => {
+        SwaggerUIBundle({
+          url: '/api-docs.json',
+          dom_id: '#swagger-ui',
+          docExpansion: 'none',
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIBundle.SwaggerUIStandalonePreset
+          ],
+          layout: "BaseLayout",
+          displayRequestDuration: true,
+          showExtensions: true
+        });
+      };
+    </script>
+  </body>
+</html>
+  `);
+});
 
 app.use(notFound);
 app.use(errorHandler);
