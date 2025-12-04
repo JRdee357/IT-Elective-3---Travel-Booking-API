@@ -23,11 +23,11 @@ app.use(
       useDefaults: true,
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "'unsafe-inline'", "https://unpkg.com"],
-        "style-src": ["'self'", "'unsafe-inline'", "https://unpkg.com"],
-        "connect-src": ["'self'", "https://unpkg.com"],
-        "img-src": ["'self'", "data:", "https://unpkg.com"],
-        "font-src": ["'self'", "https://unpkg.com"],
+        "script-src": ["'self'", "'unsafe-inline'", "https:"],
+        "style-src": ["'self'", "'unsafe-inline'", "https:"],
+        "connect-src": ["'self'", "https:", "http:"],
+        "img-src": ["'self'", "data:", "https:"],
+        "font-src": ["'self'", "https:", "data:"],
       },
     },
   })
