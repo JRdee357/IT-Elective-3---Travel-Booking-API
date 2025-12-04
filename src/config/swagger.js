@@ -1,5 +1,6 @@
 const path = require('path');
 const swaggerJsdoc = require('swagger-jsdoc');
+const Flight = require('../models/flight.model');
 
 const options = {
   definition: {
@@ -88,38 +89,7 @@ const options = {
             updatedAt: { type: 'string', format: 'date-time' },
           },
         },
-        Flight: {
-          type: 'object',
-          required: [
-            'flightNumber',
-            'origin',
-            'destination',
-            'departureTime',
-            'arrivalTime',
-            'price',
-            'totalSeats',
-            'seatsAvailable'
-          ],
-          properties: {
-            _id: { type: 'string', description: 'Flight ID' },
-            flightNumber: { type: 'string', description: 'Unique flight code (uppercase)' },
-            origin: { type: 'string', description: 'Origin airport/city code (uppercase)' },
-            destination: { type: 'string', description: 'Destination airport/city code (uppercase)' },
-            departureTime: { type: 'string', format: 'date-time' },
-            arrivalTime: { type: 'string', format: 'date-time' },
-            price: { type: 'number', minimum: 0 },
-            totalSeats: { type: 'integer', minimum: 1 },
-            seatsAvailable: { type: 'integer', minimum: 0 },
-            status: { type: 'string', enum: ['Scheduled', 'Delayed', 'Cancelled'] },
-            amenities: {
-              type: 'object',
-              properties: {
-                wifi: { type: 'boolean' },
-                meals: { type: 'boolean' }
-              }
-            }
-          }
-        },
+        Flight: Flight.openapiSchema,
         User: {
           type: 'object',
           properties: {
