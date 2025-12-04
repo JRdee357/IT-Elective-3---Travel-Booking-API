@@ -40,6 +40,8 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/auth', authRoutes);
 
+// Expose raw OpenAPI spec for debugging (helps verify Swagger loads correctly)
+app.get('/api-docs.json', (req, res) => res.json(swaggerSpec));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(notFound);
