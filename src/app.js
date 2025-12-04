@@ -48,14 +48,8 @@ app.use('/api/v1/auth', authRoutes);
 
 // Expose raw OpenAPI spec for debugging (helps verify Swagger loads correctly)
 app.get('/api-docs.json', (req, res) => res.json(swaggerSpec));
-// Custom Swagger UI page to avoid asset path issues on serverless hosting
-app.use('/api-docs', swaggerUi.serve);
-app.get('/api-docs', swaggerUi.setup(swaggerSpec, {
-  explorer: true,
-  swaggerOptions: {
-    url: '/api-docs.json',
-  },
-}));
+// Serve Swagger UI with bundled assets from swagger-ui-express
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
 
 app.use(notFound);
 app.use(errorHandler);
