@@ -9,6 +9,42 @@ const mapBookingResponse = (booking) =>
     { path: 'user', select: 'firstName lastName email phone' },
   ]);
 
+// Validate flight schema before saving
+const validateFlightSchema = (flight) => {
+  const errors = [];
+  
+  // Check required fields
+  if (!flight.flightNumber || typeof flight.flightNumber !== 'string') {
+    errors.push('flightNumber is required and must be a string');
+  }
+  if (!flight.origin || typeof flight.origin !== 'string') {
+    errors.push('origin is required and must be a string');
+  }
+  if (!flight.destination || typeof flight.destination !== 'string') {
+    errors.push('destination is required and must be a string');
+  }
+  if (!flight.departureTime || !(flight.departureTime instanceof Date)) {
+    errors.push('departureTime is required and must be a valid date');
+  }
+  if (!flight.arrivalTime || !(flight.arrivalTime instanceof Date)) {
+    errors.push('arrivalTime is required and must be a valid date');
+  }
+  if (typeof flight.price !== 'number' || flight.price < 0) {
+    errors.push(`price must be a number >= 0, got ${typeof flight.price}: ${JSON.stringify(flight.price)}`);
+  }
+  if (typeof flight.totalSeats !== 'number' || flight.totalSeats < 1 || isNaN(flight.totalSeats)) {
+    errors.push(`totalSeats must be an integer >= 1, got ${typeof flight.totalSeats}: ${flight.totalSeats}`);
+  }
+  if (typeof flight.seatsAvailable !== 'number' || flight.seatsAvailable < 0 || isNaN(flight.seatsAvailable)) {
+    errors.push(`seatsAvailable must be an integer >= 0, got ${typeof flight.seatsAvailable}: ${flight.seatsAvailable}`);
+  }
+  if (flight.status && !['Scheduled', 'Delayed', 'Cancelled'].includes(flight.status)) {
+    errors.push(`status must be one of: Scheduled, Delayed, Cancelled. Got: ${flight.status}`);
+  }
+  
+  return errors;
+};
+
 const createBooking = asyncHandler(async (req, res, next) => {
   const {
     flightId,
@@ -24,11 +60,23 @@ const createBooking = asyncHandler(async (req, res, next) => {
     return next(new ApiError(404, 'Flight not found'));
   }
 
+  // Validate flight schema before proceeding
+  const schemaErrors = validateFlightSchema(flight.toObject());
+  if (schemaErrors.length > 0) {
+    return next(new ApiError(400, `Flight has schema issues:\n${schemaErrors.join('\n')}`));
+  }
+
   if (flight.seatsAvailable < passengers) {
     return next(new ApiError(400, 'Not enough seats available on this flight'));
   }
 
-  const amount = payment.amount || flight.price * passengers;
+  const expectedAmount = flight.price * passengers;
+  const amount = payment.amount || expectedAmount;
+
+  // Validate amount matches expected cost
+  if (payment.amount && Math.abs(payment.amount - expectedAmount) > 0.01) {
+    return next(new ApiError(400, `Payment amount must equal flight price × passengers: ${flight.price} × ${passengers} = ${expectedAmount}. Got: ${payment.amount}`));
+  }
 
   const booking = await Booking.create({
     user: req.user._id,
@@ -40,7 +88,6 @@ const createBooking = asyncHandler(async (req, res, next) => {
       amount,
       currency: payment.currency || 'USD',
       method: payment.method || 'card',
-      last4: payment.last4,
     },
   });
 

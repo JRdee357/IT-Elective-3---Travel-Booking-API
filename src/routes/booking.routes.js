@@ -31,24 +31,57 @@ const router = express.Router();
  *             properties:
  *               flightId:
  *                 type: string
+ *                 example: "69303558eb378fa12b3efd50"
  *                 description: MongoDB ID of the flight
  *               passengers:
  *                 type: integer
- *                 description: Number of passengers
+ *                 example: 1
+ *                 description: Number of passengers (minimum 1)
+ *               passengerDetails:
+ *                 type: array
+ *                 description: Optional passenger details
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     seat:
+ *                       type: string
+ *               extras:
+ *                 type: object
+ *                 description: Optional extras (baggage, meals, etc.)
+ *                 properties:
+ *                   baggage:
+ *                     type: integer
+ *                   mealPreference:
+ *                     type: string
  *               payment:
  *                 type: object
+ *                 description: Payment information
  *                 properties:
  *                   method:
  *                     type: string
+ *                     example: "card"
+ *                     description: Payment method (card, bank transfer, etc.)
  *                   amount:
  *                     type: number
+ *                     example: 4850
+ *                     description: Payment amount (must equal price × passengers)
+ *                   currency:
+ *                     type: string
+ *                     example: "PHP"
+ *                     description: Currency code (defaults to USD)
  *     responses:
  *       201:
  *         description: Booking created successfully
  *       400:
- *         description: Invalid booking data or not enough seats
+ *         description: Invalid booking data, flight schema issues, or not enough seats
  *       401:
  *         description: Unauthorized
+ *       404:
+ *         description: Flight not found
  */
 router.post(
   '/',
