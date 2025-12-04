@@ -159,7 +159,12 @@ router.put(
     body('password').optional().isLength({ min: 8 }),
     body('firstName').optional().isString(),
     body('lastName').optional().isString(),
-    body('phone').optional().isString(),
+    body('phone')
+      .optional()
+      .matches(/^\d+$/)
+      .withMessage('Phone must contain digits only')
+      .isLength({ min: 11, max: 11 })
+      .withMessage('Phone must be exactly 11 digits'),
   ],
   validateRequest,
   updateUserProfile

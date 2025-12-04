@@ -159,7 +159,28 @@ const updateBooking = asyncHandler(async (req, res, next) => {
   }
 
   if (req.body.payment) {
-    booking.payment = { ...booking.payment, ...req.body.payment };
+    const { amount, ...paymentRest } = req.body.payment;
+    const expectedAmount = booking.flight.price * booking.passengers;
+
+    if (amount !== undefined && amount < expectedAmount) {
+      return next(
+        new ApiError(
+          400,
+          `Payment amount must be at least flight price * passengers: ${booking.flight.price} * ${booking.passengers} = ${expectedAmount}. Got: ${amount}`
+        )
+      );
+    }
+
+    booking.payment = { ...booking.payment, ...paymentRest };
+
+    if (amount !== undefined) {
+      booking.payment.amount = amount;
+    }
+  }
+
+  // Ensure payment amount reflects current passenger count when not provided
+  if (!req.body.payment || req.body.payment.amount === undefined) {
+    booking.payment.amount = booking.flight.price * booking.passengers;
   }
 
   await booking.save();

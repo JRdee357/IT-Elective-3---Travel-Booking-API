@@ -4,7 +4,18 @@ const ApiError = require('../utils/ApiError');
 
 const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+  if (!authHeader) {
+    return next(new ApiError(401, 'Authorization header missing'));
+  }
+
+  const [scheme, rawToken] = authHeader.split(' ');
+
+  if (!scheme || scheme.toLowerCase() !== 'bearer') {
+    return next(new ApiError(401, 'Authorization header must use Bearer scheme'));
+  }
+
+  const token = rawToken && rawToken.trim();
 
   if (!token) {
     return next(new ApiError(401, 'Authentication token missing'));
