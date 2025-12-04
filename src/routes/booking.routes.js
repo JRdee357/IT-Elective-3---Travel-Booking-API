@@ -111,6 +111,22 @@ router.post(
  *         schema:
  *           type: string
  *         description: MongoDB ID of the booking
+ *     responses:
+ *       200:
+ *         description: Booking details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       403:
+ *         description: Forbidden - not your booking
+ *       404:
+ *         description: Booking not found
  */
 router.get(
   '/:bookingId',
@@ -143,8 +159,53 @@ router.get(
  *             properties:
  *               passengers:
  *                 type: integer
+ *               passengerDetails:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     seat:
+ *                       type: string
+ *               extras:
+ *                 type: object
+ *                 properties:
+ *                   baggage:
+ *                     type: integer
+ *                   mealPreference:
+ *                     type: string
  *               payment:
  *                 type: object
+ *                 properties:
+ *                   method:
+ *                     type: string
+ *                   amount:
+ *                     type: number
+ *                   currency:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: Booking updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       400:
+ *         description: Invalid data or no seats available
+ *       403:
+ *         description: Forbidden - not your booking
+ *       404:
+ *         description: Booking not found
  */
 router.put(
   '/:bookingId',

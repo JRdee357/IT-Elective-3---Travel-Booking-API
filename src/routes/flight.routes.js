@@ -20,15 +20,6 @@ const router = express.Router();
  *         name: destination
  *         schema:
  *           type: string
- *       - in: query
- *         name: date
- *         schema:
- *           type: string
- *           format: date
- *       - in: query
- *         name: passengers
- *         schema:
- *           type: integer
  *     responses:
  *       200:
  *         description: List of flights
@@ -38,8 +29,6 @@ router.get(
   [
     query('origin').optional().isString().trim(),
     query('destination').optional().isString().trim(),
-    query('date').optional().isISO8601(),
-    query('passengers').optional().isInt({ min: 1 }),
   ],
   validateRequest,
   searchFlights

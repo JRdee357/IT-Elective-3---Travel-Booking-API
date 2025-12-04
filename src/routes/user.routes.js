@@ -26,6 +26,19 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Account created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  */
 router.post(
   '/',
@@ -55,6 +68,29 @@ router.post(
  *         schema:
  *           type: string
  *         description: MongoDB ID of the user
+ *     responses:
+ *       200:
+ *         description: User profile with bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     bookings:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Booking'
+ *       403:
+ *         description: Forbidden - cannot view another user
+ *       404:
+ *         description: User not found
  */
 router.get(
   '/:userId',
@@ -95,6 +131,24 @@ router.get(
  *                 type: string
  *               phone:
  *                 type: string
+ *     responses:
+ *       200:
+ *         description: User profile updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       403:
+ *         description: Forbidden - cannot update another user
+ *       404:
+ *         description: User not found
  */
 router.put(
   '/:userId',
@@ -126,6 +180,22 @@ router.put(
  *         schema:
  *           type: string
  *         description: MongoDB ID of the user
+ *     responses:
+ *       200:
+ *         description: User deleted and bookings canceled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       403:
+ *         description: Forbidden - cannot delete another user
+ *       404:
+ *         description: User not found
  */
 router.delete(
   '/:userId',
